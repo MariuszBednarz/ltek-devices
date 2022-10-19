@@ -1,0 +1,44 @@
+# compiled output
+/node_modules
+
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+.env
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+/.vscode
+.vscode
+
+## LOCK - 03.03 This file started crushing heroku deploy after socket io updated(Not sure)
+*.package-lock.json
+
+# REST - Plugin
+*.rest
+
+# DB - DB utils functions
+.migration&utilsFunctions/*
+.migrationUtils/*
