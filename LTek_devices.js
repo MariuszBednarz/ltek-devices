@@ -68,6 +68,13 @@ usbDetect.on('add', function () {
       });
       device.hid.on("error", function (err) { console.log(err) });
     }
+    for (const entry of available.devices.wired.entries()) {
+      const device = wired_bases.getBySerialNumber(entry[0]);
+      device.hid.on("data", function (data) {
+        device.process(data);
+      });
+      device.hid.on("error", function (err) { console.log(err) });
+    }
   }, 3000)
 });
 usbDetect.on('remove', function (device) {
