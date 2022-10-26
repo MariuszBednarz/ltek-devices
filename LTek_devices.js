@@ -28,21 +28,33 @@ Drugi pad, numer serii (20 1b 00 00 00 )
 */
 
 const WirelessBases = require("./WirelessBases");
+const WiredBases = require("./WiredBases");
 const HID = require("node-hid");
 const usbDetect = require('usb-detection');
 const wireless_bases = new WirelessBases();
+const wired_bases = new WiredBases();
 usbDetect.startMonitoring();
 
-usbDetect.on('add', function (device) {
+usbDetect.on('add', function () {
   setTimeout(function () {
     const searchDevices = function () {
-      const danceBaseMINI = new HID.HID(1003, 32772)
-      const newDevice = new WirelessBases.DanceBaseMINI(danceBaseMINI);
-      wireless_bases.add(newDevice);
-
+      try {
+        const danceBaseMINI = new HID.HID(1003, 32772)
+        const newDevice = new WirelessBases.DanceBaseMINI(danceBaseMINI);
+        wireless_bases.add(newDevice);
+      } catch (error) {
+        console.log(error)
+      }
+      try {
+        const dancePadPRO = new HID.HID(1003, 32833)
+        const newDevice = new WiredBases.DancePadPRO(dancePadPRO);
+        wired_bases.add(newDevice);
+      } catch (error) {
+        console.log(error)
+      }
       return {
         devices: {
-          wireless: wireless_bases.getAll(),
+          wireless: wireless_bases.getAll(), wired: wired_bases.getAll()
         },
       };
     }
@@ -59,9 +71,13 @@ usbDetect.on('add', function (device) {
   }, 3000)
 });
 usbDetect.on('remove', function (device) {
-  console.log(device)
   setTimeout(function () {
     wireless_bases.remove(device.serialNumber);
-    console.log(wireless_bases.getAll());
+    wired_bases.remove(device.serialNumber);
+    console.log(JSON.stringify(
+      {
+        devices: { wireless: wireless_bases.getAll(), wired: wired_bases.getAll() },
+      }
+    ));
   }, 3000)
 })
