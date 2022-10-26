@@ -73,6 +73,9 @@ class WirelessBases {
   getBySerialNumber(serialNumber) {
     return this.bases.get(serialNumber);
   }
+  remove(serialNumber) {
+    return this.bases.delete(serialNumber);
+  }
 }
 
 module.exports = WirelessBases;

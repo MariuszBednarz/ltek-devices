@@ -29,51 +29,39 @@ Drugi pad, numer serii (20 1b 00 00 00 )
 
 const WirelessBases = require("./WirelessBases");
 const HID = require("node-hid");
-
-const HID_devices = HID.devices();
+const usbDetect = require('usb-detection');
 const wireless_bases = new WirelessBases();
+usbDetect.startMonitoring();
 
-const searchDevices = function () {
-  const danceBaseMINI = HID_devices.filter(
-    (
-      device //"L-TEK Dance Base MINI"
-    ) =>
-      device.vendorId == 1003 &&
-      device.productId == 32772 &&
-      device.usagePage > 10
-  );
+usbDetect.on('add', function (device) {
+  setTimeout(function () {
+    const searchDevices = function () {
+      const danceBaseMINI = new HID.HID(1003, 32772)
+      const newDevice = new WirelessBases.DanceBaseMINI(danceBaseMINI);
+      wireless_bases.add(newDevice);
 
-  danceBaseMINI.forEach(device => {
-    const newDevice = new WirelessBases.DanceBaseMINI(new HID.HID(device.path));
-    wireless_bases.add(newDevice);
-  });
+      return {
+        devices: {
+          wireless: wireless_bases.getAll(),
+        },
+      };
+    }
+    const available = searchDevices();
+    console.log(available)
 
-  return {
-    devices: {
-      wireless: wireless_bases.getAll(),
-
-    },
-  };
-}
-
-const available = searchDevices();
-console.log(available)
-
-// var input = new Uint8Array(64);
-// input[0] = 10;
-// input[1] = 201;
-// input[2] = 128;
-// setInterval(() => {
-//   //device.write(input);
-//   device.read(function (err, data) {
-//     //console.log(data.toString("hex"));
-//   });
-// }, 200000 * 1000);
-
-for (const entry of available.devices.wireless.entries()) {
-  const device = wireless_bases.getBySerialNumber(entry[0]);
-  device.hid.on("data", function (data) {
-    device.process(data);
-  });
-}
-
+    for (const entry of available.devices.wireless.entries()) {
+      const device = wireless_bases.getBySerialNumber(entry[0]);
+      device.hid.on("data", function (data) {
+        device.process(data);
+      });
+      device.hid.on("error", function (err) { console.log(err) });
+    }
+  }, 3000)
+});
+usbDetect.on('remove', function (device) {
+  console.log(device)
+  setTimeout(function () {
+    wireless_bases.remove(device.serialNumber);
+    console.log(wireless_bases.getAll());
+  }, 3000)
+})

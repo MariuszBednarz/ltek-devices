@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-hid": "^2.1.2"
+    "node-hid": "^2.1.2",
+    "usb-detection": "^4.14.1"
   },
   "devDependencies": {
     "mag-stripe": "^1.0.8"
