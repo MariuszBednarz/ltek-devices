@@ -6,9 +6,11 @@ class WiredBases {
     return class DancePadPRO {
       hid;
       type;
-      constructor(hid, type) {
+      bus;
+      constructor(hid, type, bus) {
         this.hid = hid;
         this.type = type;
+        this.bus = bus;
       }
     };
   }

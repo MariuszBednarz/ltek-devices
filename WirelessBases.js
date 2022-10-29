@@ -5,10 +5,12 @@ class WirelessBases {
   static get DanceBaseMINI() {
     return class DanceBaseMINI {
       hid;
-      slots;
-      constructor(hid, slots) {
+      type;
+      bus;
+      constructor(hid, type, bus) {
         this.hid = hid;
-        this.slots = slots;
+        this.type = type;
+        this.bus = bus;
       }
     };
   }
