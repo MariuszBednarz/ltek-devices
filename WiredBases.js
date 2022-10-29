@@ -6,25 +6,28 @@ class WiredBases {
     return class DancePadPRO {
       hid;
       type;
-      bus;
-      constructor(hid, type, bus) {
+      address;
+      constructor(hid, type, address) {
         this.hid = hid;
         this.type = type;
-        this.bus = bus;
+        this.address = address;
       }
     };
   }
   add(device) {
-    return this.bases.set(device.hid.getDeviceInfo().serialNumber, device);
+    return this.bases.set(`${device.address}`, device);
   }
   getAll() {
     return this.bases;
   }
-  getBySerialNumber(serialNumber) {
-    return this.bases.get(serialNumber);
+  get(address) {
+    return this.bases.get(address);
   }
-  remove(serialNumber) {
-    return this.bases.delete(serialNumber);
+  remove(address) {
+    return this.bases.delete(address);
+  }
+  clear() {
+    return this.bases.clear();
   }
 }
 
