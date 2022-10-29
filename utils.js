@@ -61,9 +61,6 @@ const addDevices = function (HID, wireless_bases, WirelessBases, wired_bases, Wi
 }
 
 const process = (device, data, type) => {
-  console.log("here " + type)
-  console.log("here2 " + device.type)
-  console.log("here3 ")
   let bytes = [...data].map(byteToBinaryString).join(" ").split(" ")
   bytes.shift()
   for (let i = 0; i < bytes.length; i++) {
