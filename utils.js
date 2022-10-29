@@ -1,3 +1,5 @@
+const broadcast = require("./broadcast");
+
 const byteToBinaryString = function (buffer) {
   return buffer.toString(2).padStart(8, "0");
 };
@@ -17,8 +19,8 @@ const addDevices = function (HID, wireless_bases, WirelessBases, wired_bases, Wi
             const address = arrayOfDevices.filteredAllWireless.shift();
             const newDevice = new WirelessBases.DanceBaseMINI(danceBaseMINI, {}, address);
             wireless_bases.add(newDevice);
-            danceBaseMINI.on("data", function (data) { process(newDevice, data, 'wireless'); });
-            danceBaseMINI.on("error", function (error) { console.log(error) });
+            danceBaseMINI.on("data", function (data) { process({ wireless_bases, wired_bases }, newDevice, data, 'wireless'); });
+            danceBaseMINI.on("error", function (error) { });
           }
         } catch (error) {}
       });
@@ -29,8 +31,8 @@ const addDevices = function (HID, wireless_bases, WirelessBases, wired_bases, Wi
             const address = arrayOfDevices.filteredAllWired.shift()
             const newDevice = new WiredBases.DancePadPRO(dancePadPRO, 'DDR', address);
             wired_bases.add(newDevice);
-            dancePadPRO.on("data", function (data) { process(newDevice, data, 'wired'); });
-            dancePadPRO.on("error", function (error) { console.log(error) });
+            dancePadPRO.on("data", function (data) { process({ wireless_bases, wired_bases }, newDevice, data, 'wired'); });
+            dancePadPRO.on("error", function (error) { });
           }
         } catch (error) {}
       });
@@ -39,14 +41,15 @@ const addDevices = function (HID, wireless_bases, WirelessBases, wired_bases, Wi
         devices: {
           wireless: wireless_bases.getAll(), wired: wired_bases.getAll()
         },
+        keys: []
       };
     }
-    const available = searchDevices();
-    console.log(available)
+    broadcast(searchDevices())
   }, 1500)
+  return;
 }
 
-const process = (device, data, type) => {
+const process = (bases, device, data, type) => {
   let bytes = [...data].map(byteToBinaryString).join(" ").split(" ")
   bytes.shift()
   for (let i = 0; i < bytes.length; i++) {
@@ -114,7 +117,13 @@ const process = (device, data, type) => {
     }
   });
 
-  return console.log(response);
+  broadcast({
+    devices: {
+      wireless: bases.wireless_bases.getAll(), wired: bases.wired_bases.getAll()
+    },
+    keys: response
+  });
+  return;
 }
 
 module.exports = {

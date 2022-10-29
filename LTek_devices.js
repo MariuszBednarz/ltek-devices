@@ -6,6 +6,7 @@ const WirelessBases = require("./WirelessBases");
 const WiredBases = require("./WiredBases");
 
 const { addDevices } = require("./utils");
+const broadcast = require("./broadcast");
 
 const wireless_bases = new WirelessBases();
 const wired_bases = new WiredBases();
@@ -41,9 +42,10 @@ usbDetect.on('remove', function (device) {
   filteredAllWireless.forEach(address => wireless_bases.remove(`${address}`));
   filteredAllWired.forEach(address => wired_bases.remove(`${address}`));
 
-  console.log({
+  broadcast({
     devices: {
       wireless: wireless_bases.getAll(), wired: wired_bases.getAll()
     },
+    keys: []
   })
 });
