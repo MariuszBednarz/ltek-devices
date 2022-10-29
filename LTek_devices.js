@@ -31,7 +31,6 @@ usbDetect.on('add', function (device) {
   addDevices(HID, wireless_bases, WirelessBases, wired_bases, WiredBases, { filteredAllWireless, filteredAllWired });
 });
 usbDetect.on('remove', function (device) {
-  console.log(device)
   const deviceArray = [device];
   const filteredAllWireless = deviceArray
     .filter(d => d.vendorId === 1003 && d.productId === 32772)

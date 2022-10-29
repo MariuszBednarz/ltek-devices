@@ -24,6 +24,8 @@ class WiredBases {
     return this.bases.get(address);
   }
   remove(address) {
+    const controller = this.bases.get(address);
+    try { controller.hid.close(); } catch (error) { };
     return this.bases.delete(address);
   }
   clear() {

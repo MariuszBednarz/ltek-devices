@@ -14,8 +14,11 @@ const addDevices = function (HID, wireless_bases, WirelessBases, wired_bases, Wi
         try {
           if (device.vendorId == 1003 && device.productId == 32772) {
             const danceBaseMINI = new HID.HID(device.path)
-            const newDevice = new WirelessBases.DanceBaseMINI(danceBaseMINI, {}, arrayOfDevices.filteredAllWireless.pop());
+            const address = arrayOfDevices.filteredAllWireless.shift();
+            const newDevice = new WirelessBases.DanceBaseMINI(danceBaseMINI, {}, address);
             wireless_bases.add(newDevice);
+            danceBaseMINI.on("data", function (data) { process(newDevice, data, 'wireless'); });
+            danceBaseMINI.on("error", function (error) { console.log(error) });
           }
         } catch (error) {}
       });
@@ -23,8 +26,11 @@ const addDevices = function (HID, wireless_bases, WirelessBases, wired_bases, Wi
         try {
           if (device.vendorId == 1003 && device.productId == 32833 && (device.usagePage > 100 || device.usage > 100)) {
             const dancePadPRO = new HID.HID(device.path)
-            const newDevice = new WiredBases.DancePadPRO(dancePadPRO, 'DDR', arrayOfDevices.filteredAllWired.pop());
+            const address = arrayOfDevices.filteredAllWired.shift()
+            const newDevice = new WiredBases.DancePadPRO(dancePadPRO, 'DDR', address);
             wired_bases.add(newDevice);
+            dancePadPRO.on("data", function (data) { process(newDevice, data, 'wired'); });
+            dancePadPRO.on("error", function (error) { console.log(error) });
           }
         } catch (error) {}
       });
@@ -37,21 +43,6 @@ const addDevices = function (HID, wireless_bases, WirelessBases, wired_bases, Wi
     }
     const available = searchDevices();
     console.log(available)
-
-    for (const entry of available.devices.wireless.entries()) {
-      const device = wireless_bases.get(entry[0]);
-      device.hid.on("data", function (data) {
-        process(device, data, 'wireless');
-      });
-      device.hid.on("error", function (err) { console.log(err) });
-    }
-    for (const entry of available.devices.wired.entries()) {
-      const device = wired_bases.get(entry[0]);
-      device.hid.on("data", function (data) {
-        process(device, data, 'wired');
-      });
-      device.hid.on("error", function (err) { console.log(err) });
-    }
   }, 1500)
 }
 
