@@ -1,4 +1,21 @@
 const broadcast = function (data) {
-    console.log(data);
+    return console.log(aggregate(data)) //źródełko
 };
-module.exports = broadcast;
+
+let keys = [];
+const aggregate = function (data) {
+    if (data === undefined || data === null) return;
+    if (data.keys.length !== 0) {
+        keys.push(...data.keys.down);
+        keys = keys.filter(key => !data.keys.up.includes(key.number))
+    }
+    return {
+        devices: data.devices,
+        keys: keys.filter((a, i) => keys.findIndex((s) => a.controller === s.controller && a.number === s.number) === i)
+    };
+}
+
+module.exports = {
+    broadcast,
+    aggregate
+}

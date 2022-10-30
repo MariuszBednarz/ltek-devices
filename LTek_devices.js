@@ -6,7 +6,7 @@ const WirelessBases = require("./WirelessBases");
 const WiredBases = require("./WiredBases");
 
 const { addDevices } = require("./utils");
-const broadcast = require("./broadcast");
+const { broadcast } = require("./broadcast");
 
 const wireless_bases = new WirelessBases();
 const wired_bases = new WiredBases();
