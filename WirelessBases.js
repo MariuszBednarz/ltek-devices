@@ -21,7 +21,6 @@ class WirelessBases {
     input_slots[2] = 128;
     device.hid.write(input_slots);
     device.hid.read(function (err, data) {
-      console.log(data.toString("hex"))
       const savedData = data;
       device.slots = {
         slot1: savedData.toString("hex").slice(18, 30),
@@ -29,7 +28,6 @@ class WirelessBases {
         slot3: savedData.toString("hex").slice(42, 54),
         slot4: savedData.toString("hex").slice(54, 66),
       }
-      console.log(device.slots)
     })
 
     return this.bases.set(`${device.address}`, device);
