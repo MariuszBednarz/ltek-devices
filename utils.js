@@ -36,7 +36,6 @@ const addDevices = function (HID, wireless_bases, WirelessBases, wired_bases, Wi
           }
         } catch (error) {}
       });
-
       return {
         devices: {
           wireless: wireless_bases.getAll(), wired: wired_bases.getAll()

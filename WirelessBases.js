@@ -5,11 +5,11 @@ class WirelessBases {
   static get DanceBaseMINI() {
     return class DanceBaseMINI {
       hid;
-      type;
+      slots;
       address;
-      constructor(hid, type, address) {
+      constructor(hid, slots, address) {
         this.hid = hid;
-        this.type = type;
+        this.slots = slots;
         this.address = address;
       }
     };
@@ -21,14 +21,17 @@ class WirelessBases {
     input_slots[2] = 128;
     device.hid.write(input_slots);
     device.hid.read(function (err, data) {
+      console.log(data.toString("hex"))
       const savedData = data;
       device.slots = {
-        slot1: savedData.toString("hex").slice(20, 30),
-        slot2: savedData.toString("hex").slice(20, 30),
-        slot3: savedData.toString("hex").slice(44, 54),
-        slot4: savedData.toString("hex").slice(56, 66),
+        slot1: savedData.toString("hex").slice(18, 30),
+        slot2: savedData.toString("hex").slice(30, 42),
+        slot3: savedData.toString("hex").slice(42, 54),
+        slot4: savedData.toString("hex").slice(54, 66),
       }
+      console.log(device.slots)
     })
+
     return this.bases.set(`${device.address}`, device);
   }
   getAll() {
