@@ -5,7 +5,7 @@ const broadcast = function (data) {
 let keys = [];
 const aggregate = function (data) {
     if (data === undefined || data === null) return;
-    if (data.keys.length !== 0) {
+    if (data.keys.length !== 0 && data.keys.down !== undefined && data.keys.up !== undefined) {
         keys.push(...data.keys.down);
         keys = keys.filter(key => !data.keys.up.includes(key.number))
     }

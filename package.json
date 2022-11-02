@@ -2,8 +2,9 @@
   "name": "ltek-devices",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "LTek_devices.js",
   "scripts": {
+    "start": "node ./LTek_devices.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
