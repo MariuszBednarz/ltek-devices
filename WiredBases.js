@@ -29,7 +29,12 @@ class WiredBases {
     return this.bases.delete(address);
   }
   clear() {
-    return this.bases.clear();
+    for (let address of this.bases.keys()) {
+      const controller = this.bases.get(address);
+    try { controller.hid.close(); } catch (error) { console.log("error - hid close") };
+    }
+    this.bases.clear();
+    return;
   }
 }
 

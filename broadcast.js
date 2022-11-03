@@ -1,13 +1,14 @@
 const broadcast = function (data) {
-    return console.log(aggregate(data)) //źródełko
+    console.log(data.keys)
+   //return console.log(aggregate(data)) //źródełko
 };
 
 let keys = [];
 const aggregate = function (data) {
     if (data === undefined || data === null) return;
-    if (data.keys.length !== 0 && data.keys.down !== undefined && data.keys.up !== undefined) {
-        keys.push(...data.keys.down);
-        keys = keys.filter(key => !data.keys.up.includes(key.number))
+    if (data.keys.length !== 0 && data.keys !== undefined) {
+        console.log(data.keys)
+        keys.push(data.keys);
     }
     return {
         devices: data.devices,
@@ -15,7 +16,12 @@ const aggregate = function (data) {
     };
 }
 
+const clearKeys = function () {
+    return keys.length = 0;
+}
+
 module.exports = {
     broadcast,
-    aggregate
+    aggregate,
+    clearKeys,
 }
