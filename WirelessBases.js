@@ -15,21 +15,12 @@ class WirelessBases {
     };
   }
   add(device) {
-    const input_slots = new Uint8Array(64);
-    input_slots[0] = 10;
-    input_slots[1] = 201;
-    input_slots[2] = 128;
-    device.hid.write(input_slots);
-    device.hid.read(function (err, data) {
-      const savedData = data;
-      device.slots = {
-        slot1: savedData.toString("hex").slice(18, 30),
-        slot2: savedData.toString("hex").slice(30, 42),
-        slot3: savedData.toString("hex").slice(42, 54),
-        slot4: savedData.toString("hex").slice(54, 66),
-      }
-    })
-
+    device.slots = {
+      slot1: "slot1",
+      slot2: "slot2",
+      slot3: "slot3",
+      slot4: "slot4",
+    }
     return this.bases.set(`${device.address}`, device);
   }
   getAll() {
