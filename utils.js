@@ -9,38 +9,35 @@ const reverse = function (string) {
 };
 
 const addDevices = async function (HID, wireless_bases, WirelessBases, wired_bases, WiredBases, arrayOfDevices) {
-  //setTimeout(function () {
-    const searchDevices = function () {
-      arrayOfDevices.filteredAllWireless.forEach((device) => {
-        if (arrayOfDevices.filteredAllWireless.length == 0) return;
-        try {
-          const danceBaseMINI = new HID.HID(device.path)
-          const newDevice = new WirelessBases.DanceBaseMINI(danceBaseMINI, {}, device.path);
-          wireless_bases.add(newDevice);
-          danceBaseMINI.on("data", function (data) { process({ wireless_bases, wired_bases }, newDevice, data, 'wireless'); });
-          danceBaseMINI.on("error", function (error) { });
-        } catch (error) {}
-      });
-      arrayOfDevices.filteredAllWired.forEach((device) => {
-        if (arrayOfDevices.filteredAllWired.length == 0) return;
-        try {
-          const dancePadPRO = new HID.HID(device.path)
-          const newDevice = new WiredBases.DancePadPRO(dancePadPRO, 'DDR', device.path);
-          wired_bases.add(newDevice);
-          dancePadPRO.on("data", function (data) { process({ wireless_bases, wired_bases }, newDevice, data, 'wired'); });
-          dancePadPRO.on("error", function (error) { });
-        } catch (error) {}
-      });
-      return {
-        devices: {
-          wireless: wireless_bases.getAll(), wired: wired_bases.getAll()
-        },
-        keys: []
-      };
-    }
-    broadcast(searchDevices())
-  //}, 1500)
- //return;
+  const searchDevices = function () {
+    arrayOfDevices.filteredAllWireless.forEach((device) => {
+      if (arrayOfDevices.filteredAllWireless.length == 0) return;
+      try {
+        const danceBaseMINI = new HID.HID(device.path)
+        const newDevice = new WirelessBases.DanceBaseMINI(danceBaseMINI, {}, device.path);
+        wireless_bases.add(newDevice);
+        danceBaseMINI.on("data", function (data) { process({ wireless_bases, wired_bases }, newDevice, data, 'wireless'); });
+        danceBaseMINI.on("error", function (error) { });
+      } catch (error) { }
+    });
+    arrayOfDevices.filteredAllWired.forEach((device) => {
+      if (arrayOfDevices.filteredAllWired.length == 0) return;
+      try {
+        const dancePadPRO = new HID.HID(device.path)
+        const newDevice = new WiredBases.DancePadPRO(dancePadPRO, 'DDR', device.path);
+        wired_bases.add(newDevice);
+        dancePadPRO.on("data", function (data) { process({ wireless_bases, wired_bases }, newDevice, data, 'wired'); });
+        dancePadPRO.on("error", function (error) { });
+      } catch (error) { }
+    });
+    return {
+      devices: {
+        wireless: wireless_bases.getAll(), wired: wired_bases.getAll()
+      },
+      keys: []
+    };
+  }
+  return await broadcast(searchDevices())
 }
 
 const process = (bases, device, data, type) => {
@@ -51,15 +48,16 @@ const process = (bases, device, data, type) => {
   }
   bytes = bytes.join("");
   const indices = [];
-  const response = [];
+  const keys = [];
+  const zeros = [];
   for (let i = 0; i < bytes.length; i++) {
-    if (bytes[i] === "1") indices.push(i + 1);
+    if (bytes[i] === "1") indices.push(i + 1); else zeros.push(`${device.address}-${i + 1}`);
   }
   indices.forEach((key) => {
     if (key == '5') device.type = 'PIU';
     if (key == '11' || key == '12') device.type = 'DDR';
     if (type == 'wireless') {
-      response.push({
+      keys.push({
         "1": { controller: "wireless - 1", address: device.address, serial: device.slots.slot1, name: "LEFT", number: `${device.address}-1` },
         "2": { controller: "wireless - 1", address: device.address, serial: device.slots.slot1, name: "RIGHT", number: `${device.address}-2` },
         "3": { controller: "wireless - 1", address: device.address, serial: device.slots.slot1, name: "UP", number: `${device.address}-3` },
@@ -90,7 +88,7 @@ const process = (bases, device, data, type) => {
       }[key])
     }
     else if (device.type == 'PIU') {
-      response.push({
+      keys.push({
         "1": { controller: "wired - PIU", address: device.address, name: "LEFT TOP", number: `${device.address}-1` },
         "2": { controller: "wired - PIU", address: device.address, name: "RIGHT TOP", number: `${device.address}-2` },
         "3": { controller: "wired - PIU", address: device.address, name: "LEFT BOTTOM", number: `${device.address}-3` },
@@ -99,7 +97,7 @@ const process = (bases, device, data, type) => {
       }[key])
     }
     else {
-      response.push({
+      keys.push({
         "1": { controller: "wired - DDR", address: device.address, name: "LEFT", number: `${device.address}-1` },
         "2": { controller: "wired - DDR", address: device.address, name: "RIGHT", number: `${device.address}-2` },
         "3": { controller: "wired - DDR", address: device.address, name: "UP", number: `${device.address}-3` },
@@ -109,12 +107,11 @@ const process = (bases, device, data, type) => {
       }[key])
     }
   });
-
   broadcast({
     devices: {
       wireless: bases.wireless_bases.getAll(), wired: bases.wired_bases.getAll()
     },
-    keys: { response},
+    keys: { down: keys, up: zeros },
   });
   return;
 }
